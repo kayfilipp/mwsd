@@ -1,0 +1,11 @@
+.env
+celerybeat-schedule
+venv
+__pycache__
+scratch.py
+setup/
+tests.py
+util/testing.py
+alembic.ini
+alembic
+hosting.md

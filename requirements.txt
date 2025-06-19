@@ -1,0 +1,11 @@
+sqlmodel
+fastapi[standard]
+requests
+psycopg2-binary
+python-dotenv
+sqlalchemy
+sqlalchemy-utils
+ksuid
+alembic
+bcrypt==4.0.1
+celery
