@@ -27,12 +27,19 @@ user = {
 r.post("https://www.mwsd.com/api/user/register", json=user)
 ```
 
+### Creating a Session 
+Sessions are required to send, read, and answer messages. Each user may only have one active session at any time and must log out of it.
+Sessions are always temporary and will disappear on their own unless they are extended. Sessions have a session hash that must be passed
+to other endpoints to work properly.
+
+```python
+token = r.post("https://www.mwsd.com/api/sesion/create", json=user).json()
+```
+
 ### Sending a Message with no pass phrase
 Checking messages or sending a new messages requires a session, which can be created after you make a new user (or an existing one).
 
 ```python
-token = r.post("https://www.mwsd.com/api/sesion/create", json=user).json()
-
 message = {
     "message": {
         "to_username": "portgualTheMan",
