@@ -36,7 +36,7 @@ token = r.post("https://www.mwsd.com/api/sesion/create", json=user).json()
 message = {
     "message": {
         "to_username": "portgualTheMan",
-        "body": "i'm atomic man!"
+        "body": "im atomic man!"
     },
     "session_validate": token
 }
@@ -45,7 +45,7 @@ r.post("https://www.mwsd.com/api/message/send", json=message)
 ```
 
 ### Sending a Message with a pass phrase 
-If you're relaying highly sensitive data and have high trust with the other party, you can hide a message behind 
+If you"re relaying highly sensitive data and have high trust with the other party, you can hide a message behind 
 a pass phrase - the user will see a `statement` phrase and must respond to it with an appropriate `answer` to 
 get the message. Otherwise, they get gibberish.
 
@@ -53,7 +53,7 @@ get the message. Otherwise, they get gibberish.
 message = {
     "message": {
         "to_username": "portgualTheMan",
-        "body": "i'm atomic man!",
+        "body": "im atomic man!",
         "statement": "where is karate?", # what the user sees when they try to read the message 
         "answer": "never in here." # what the user must answer to see the full body
     },
@@ -71,13 +71,13 @@ messages = r.get("https:/www.mwsd.com/api/message/all", json=token).json()
 ```json
 [
     {
-        'id': 41, 
-        'from_username': 'someguy123', 
-        'to_username': 'fkrasovsky', 
-        'sent_on': '2025-06-18T08:27:10.349718', 
-        'expires_on': '2025-06-23T08:27:10.351276', 
-        'is_locked': true, 
-        'statement': 'what is the capital of st kitts and nevis?'
+        "id": 41, 
+        "from_username": "someguy123", 
+        "to_username": "fkrasovsky", 
+        "sent_on": "2025-06-18T08:27:10.349718", 
+        "expires_on": "2025-06-23T08:27:10.351276", 
+        "is_locked": true, 
+        "statement": "what is the capital of st kitts and nevis?"
     }
 ]
 ```
@@ -113,98 +113,3 @@ read_message = r.get(
 Attempting to read a locked message will return a `423: LOCKED` response with a preview of the message and what endpoint it can be accessed through.
 Any message that is successfully read is immediately deleted from storage, so make sure to keep local copies as needed.
 
-
-# Running Your Own MWSD Server
-
-
-## Setup
-Download relevant packages with
-
-`pip install -r requirements.txt`
-
-## Running
-this app is best launched through uvicorn:
-
-```bash 
-uvicorn app:app --reload
-```
-
-## Accessing PG in WSL:
-```bash
-sudo -u postgres psql
-
-# necessary perms 
-GRANT ALL PRIVILEGES ON SCHEMA public TO your_user;
-GRANT CREATE ON SCHEMA public TO your_user;
-```
-
-### Schema Changes - Alembic
-This app uses Alembic for migrating changes in db schema.
-You can create a new alembic instance by running:
-
-```bash
-alembic init alembic
-```
-This will create `alembic.ini` and an `alembic` directory.
-Update your `.ini` file with an updated `sqlalchemy.url` - this can be `SQLite`, `PostgreSQL`, etc.
-
-**If you are using a PostgreSQL database with a SQLModel ORM**
-Update `alembic/env.py` with the following configuration:
-
-```python
-from logging.config import fileConfig
-
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
-from sqlmodel import SQLModel
-from sqlalchemy import engine_from_config, pool
-from alembic import context
-
-# all models go here
-from models.user import User
-from models.foo import Foo
-
-config = context.config
-if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
-
-target_metadata = SQLModel.metadata
-```
-
-Alembic will not manage any models not included in this `env` file.
-
-```bash
-alembic revision --autogenerate -m "Add New Object"
-alembic upgrade head
-```
-
-This will create a new migration that updates your database.
-This app use `Postgresql` as a backend. but you can configure your
-database of choice
-
-
-**Using WSL**
-
-If executing these on a windows machine, you can use the Windows Subsystem for Linux (WSL):
-
-```bash
-wsl --install ubuntu
-```
-
-then, in a separate terminal:
-
-```
-
-```
-
-### Task Scheduling using Celery / Celery Beat 
-The `tasks.py` file contains a list of scheduled tasks that can be run on a routine basis.
-This celery implementation uses `rabbitMQ` to manage queues. In order to launch the entire stack, run the 
-following commands:
-
-```bash
-sudo systemctl start rabbitmq-server
-python -m celery -A tasks worker --loglevel=INFO
-celery -A tasks beat --loglevel=INFO
-```
