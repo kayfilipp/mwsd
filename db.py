@@ -8,6 +8,7 @@ load_dotenv()
 
 # Create pg Engine
 pg_url = os.getenv("PG_URL")
+print(f"creating engine for {pg_url}...")
 
 engine = create_engine(pg_url)
 
