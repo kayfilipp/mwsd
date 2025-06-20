@@ -38,12 +38,13 @@ gives a user their username, creation date, discoverability, and expiration date
 """
 @router.get("/user/about", response_model=UserAbout)
 async def get_user_data(user: User=Depends(get_current_user), session=Depends(get_session)):
-
-    user=session.exec(select(User).where(
-        User.username==user.username
-    )).first()
-
-    return user
+    return UserAbout(
+        id=user.id,
+        username=user.username,
+        discoverable=user.discoverable,
+        expires_on_timestamp=user.expires_on_timestamp,
+        created_timestamp=user.created_timestamp
+    ).model_dump()
 
 
 # lets a user delete their account early.
