@@ -2,6 +2,8 @@
 an app that auto-deletes messages, keeps them safe, and lets users create
 burner accounts to message each other through the command line.
 
+Read the full API Documentation <a href="https://mwsd.onrender.com/docs">here.</a>
+
 ## Features
 
  - **auto-expiring messages** : messages are destroyed from db once received by a user. 
@@ -24,7 +26,7 @@ user = {
     "password": "doIwannaKnow25"
 }
 
-r.post("https://www.mwsd.com/api/user/register", json=user)
+r.post("https://mwsd.onrender.com/api/v1/user/register", json=user)
 ```
 
 ### Creating a Session 
@@ -33,7 +35,7 @@ Sessions are always temporary and will disappear on their own unless they are ex
 to other endpoints to work properly.
 
 ```python
-token = r.post("https://www.mwsd.com/api/sesion/create", json=user).json()
+token = r.post("https://mwsd.onrender.com/api/v1/sesion/create", json=user).json()
 ```
 
 ### Sending a Message with no pass phrase
@@ -48,7 +50,7 @@ message = {
     "session_validate": token
 }
 
-r.post("https://www.mwsd.com/api/message/send", json=message)
+r.post("https://mwsd.onrender.com/api/v1/message/send", json=message)
 ```
 
 ### Sending a Message with a pass phrase 
@@ -67,12 +69,12 @@ message = {
     "session_validate": token
 }
 
-r.post("https://www.mwsd.com/api/message/send", json=message)
+r.post("https://mwsd.onrender.com/api/v1/message/send", json=message)
 ```
 
 ### Checking Your Inbox
 ```python
-messages = r.get("https:/www.mwsd.com/api/message/all", json=token).json()
+messages = r.get("https:/www.mwsd.com/api/v1/message/all", json=token).json()
 ```
 
 ```json
@@ -97,7 +99,7 @@ otherwise, a message can simply be opened by running its ID through the `read` o
 ```python
 # is_locked = true 
 answer_message = r.post(
-    f"https://www.mwsd.com/api/message/41/answer", 
+    f"https://mwsd.onrender.com/api/v1/message/41/answer", 
     json=token,
     params={"answer": "bassettere"}
 )
@@ -108,7 +110,7 @@ If your answer corresponds to the answer designated by the sender, you will see 
 ```python
 # is_locked = False 
 read_message = r.get(
-    "https://www.mwsd.com/api/message/42/read",
+    "https://mwsd.onrender.com/api/v1/message/42/read",
     json=token
 )
 
