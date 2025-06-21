@@ -8,7 +8,6 @@ tests.py
 util/testing.py
 alembic.ini
 alembic
-hosting.md
 
 
 # Byte-compiled / optimized / DLL files
