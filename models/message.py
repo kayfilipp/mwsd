@@ -42,9 +42,13 @@ class Message(Base, MessageBase, table=True):
         back_populates="messages_sent",
         sa_relationship_kwargs={"foreign_keys": "Message.from_user_id"}
     )
+    
     to_user: "User" = Relationship(
         back_populates="messages_received",
-        sa_relationship_kwargs={"foreign_keys": "Message.to_user_id"}
+        sa_relationship_kwargs={
+            "foreign_keys": "Message.to_user_id",
+            "passive_deletes": True  # ✅ This allows database-level cascading
+        }
     )
 
     def preview(self) -> MessagePreview:
