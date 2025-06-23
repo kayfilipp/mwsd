@@ -1,4 +1,4 @@
-from tasks.__init__ import *
+from base import *
 
 session=Session(engine)
 session.exec(delete(Message).where(UserSession.expires_on <= datetime.now()))
