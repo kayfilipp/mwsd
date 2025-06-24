@@ -30,6 +30,27 @@ async def create_user_session(user: User=Depends(get_current_user), session=Depe
     return user_session.as_read
 
 """
+Refresh a token by supplying the existing session hash / username 
+renames the session and extends it by an hour from the request
+"""
+@router.post("/session/refresh/{session_hash}", response_model=UserSessionRead)
+async def refresh_session(session_hash: str, username: str, session: Session=Depends(get_session)):
+
+    session_validate = UserSessionValidate(
+        username=username,
+        session_hash=session_hash
+    )
+
+    refreshed : UserSession = refresh_user_session(session_validate=session_validate, session=session)
+    return UserSessionRead(
+        user_id=refreshed.id,
+        username=refreshed.user.username,
+        session_hash=refreshed.session_hash,
+        expires_on=refreshed.expires_on
+    ).model_dump()
+
+
+"""
 Extends the user session by the configured server time in env.py
 """
 @router.patch("/session/extend/{session_hash}", response_model=UserSessionRead)
@@ -56,11 +77,14 @@ async def extend_user_session(session_hash: str, user: User=Depends(get_current_
 logs the user out of their session
 """
 @router.delete("/session/terminate/{session_hash}")
-async def terminate_user_session(session_hash: str, user: User=Depends(get_current_user), session: Session = Depends(get_session)):
+async def terminate_user_session(session_hash: str, username: str, session: Session = Depends(get_session)):
 
-    user_session = get_user_session_by_hash(user=user, session_hash=session_hash, session=session)
-    session.delete(user_session)
-    session.commit()
+    session_validate = UserSessionValidate(
+        username=username,
+        session_hash=session_hash
+    )
+
+    delete_user_session(session_validate, session)
 
     return JSONResponse(
         content="successfully revoked user session.",

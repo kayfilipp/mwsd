@@ -3,6 +3,33 @@ from util.pwd import *
 from models.user import User, UserLogin
 from models.user_session import UserSession, UserSessionValidate
 
+def refresh_user_session(session_validate: UserSessionValidate, session: Session) -> UserSession:
+
+    result = session.exec(
+        select(UserSession) 
+        .join(User, User.id == UserSession.user_id) 
+        .where(
+            UserSession.session_hash == session_validate.session_hash,
+            User.username == session_validate.username  
+        )
+    )
+    user_session: UserSession = result.scalars().first()
+
+    if not user_session:
+
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="user session cannot be authenticated."
+        )
+    
+    user_session.rename()
+    session.add(user_session)
+    session.commit()
+    session.refresh(user_session)
+
+    return user_session
+    
+
 
 def get_user_by_username(username: str, session: Session = Depends(get_session)):
     result = session.exec(select(User).where(User.username == username))
@@ -16,6 +43,27 @@ def get_user_by_username(username: str, session: Session = Depends(get_session))
         )
 
     return user 
+
+def delete_user_session(session_validate: UserSessionValidate, session: Session):
+    result = session.exec(
+        select(UserSession) 
+        .join(User, User.id == UserSession.user_id) 
+        .where(
+            UserSession.session_hash == session_validate.session_hash,
+            User.username == session_validate.username  
+        )
+    )
+    user_session = result.scalars().first()
+
+    if not user_session:
+
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="user session cannot be authenticated."
+        )
+
+    session.delete(user_session)
+    session.commit()
 
 def validate_user_by_hash(session_validate: UserSessionValidate ,session: Session):
 
