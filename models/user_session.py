@@ -37,9 +37,15 @@ class UserSession(Base, UserSessionBase, table=True):
     user: "User" = Relationship(sa_relationship_kwargs={"lazy": "joined"})
 
     def extend(self):
+        """
+        Increases the expiration date.
+        """
         self.expires_on = datetime.now() + timedelta(hours=STANDARD_EXTENSION_HRS)
 
     def rename(self):
+        """
+        changes the session hash to another ksuid.
+        """
         self.session_hash = session_hash_factory()
 
     @property 

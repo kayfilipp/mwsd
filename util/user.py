@@ -23,6 +23,8 @@ def refresh_user_session(session_validate: UserSessionValidate, session: Session
         )
     
     user_session.rename()
+    user_session.extend()
+
     session.add(user_session)
     session.commit()
     session.refresh(user_session)

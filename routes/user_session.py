@@ -51,29 +51,6 @@ async def refresh_session(session_hash: str, username: str, session: Session=Dep
 
 
 """
-Extends the user session by the configured server time in env.py
-"""
-@router.patch("/session/extend/{session_hash}", response_model=UserSessionRead)
-async def extend_user_session(session_hash: str, user: User=Depends(get_current_user), session: Session=Depends(get_session)):
-
-    user_session: UserSession = get_user_session_by_hash(user=user, session_hash=session_hash, session=session)
-    user_session.extend()
-
-    session.add(user_session)
-    session.commit()
-    session.refresh(user_session)
-
-    read = UserSessionRead(
-        user_id=user_session.user_id,
-        username=user_session.user.username,
-        session_hash=user_session.session_hash,
-        expires_on=user_session.expires_on
-    )
-
-    return read.model_dump()
-
-
-"""
 logs the user out of their session
 """
 @router.delete("/session/terminate/{session_hash}")
