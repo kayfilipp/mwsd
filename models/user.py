@@ -1,9 +1,13 @@
 from models.base import *
 from models.message import Message
 from typing import List 
+import os 
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def default_user_expires_on_factory():
-    return datetime.now() + timedelta(days=7)
+    return datetime.now() + timedelta(days=os.getenv("STANDARD_ACCOUNT_EXPIRES_IN_HRS"))
 
 
 class UserBase(SQLModel):
